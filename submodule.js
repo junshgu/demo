@@ -2,7 +2,7 @@ let path = require('path');
 let fs = require('fs');
 
 let submoduleRoot = path.resolve(__dirname, './submodule');
-let targetRouterFile = path.resolve(__dirname, './src/router/index.ts');
+let targetRouterFile = path.resolve(__dirname, './src/router/index.js');
 let targetAppFile = path.resolve(__dirname, './src/App.vue');
 
 let submodules = [];
@@ -59,7 +59,7 @@ let p2 = new Promise((resolve, reject) => {
 			let index = 0;
 
 			contentArr.some((item, i) => {
-				let flag = /const routes: Array<RouteConfig>/.test(item);
+				let flag = /const routes =/.test(item);
 
 				if(flag) {
 					index = i;
@@ -116,7 +116,7 @@ Promise.all([p1, p2]).then(() => {
 	let imports = [];
 
 	submodules.forEach(submodule => {
-		targetAppFileObj.contentArr.splice(targetAppFileObj.index, 0, `${targetAppFileObj.prefix}{name: ${submodule}, key: ${submodule}, way: __$AutoInserter},`)
+		targetAppFileObj.contentArr.splice(targetAppFileObj.index, 0, `${targetAppFileObj.prefix}{name: '${submodule}', key: '${submodule}', way: '__$AutoInserter'},`)
 		targetRouterFileObj.contentArr.splice(targetRouterFileObj.index, 0, `${targetRouterFileObj.prefix}...__$${submodule}Routes,`);
 		imports.push(`import __$${submodule}Routes from '../../submodule/${submodule}/src/router/routes.js'`);
 	});
