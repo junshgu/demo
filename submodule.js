@@ -4,7 +4,7 @@ let fs = require('fs');
 let submoduleRoot = path.resolve(__dirname, './submodule');
 let targetRouterFile = path.resolve(__dirname, './src/router/index.js');
 let targetAppFile = path.resolve(__dirname, './src/App.vue');
-
+// 装载所有子模块名
 let submodules = [];
 /**
  * 检索所有的子模块
@@ -18,7 +18,7 @@ let p1 = new Promise((resolve, reject) => {
 		let promiseList = [];
 
 		dirs.forEach((dir, index) => {
-			// 检索submodule下的所有目录下的package.json文件
+			// 检索submodule下的所有目录下的package.json文件属性
 			// 如果文件存在说明是一个正常的子模块
 			// 如果不存在说明是一个非正常的子模块
 			promiseList.push(new Promise((resolve, reject) => {
@@ -114,11 +114,26 @@ let p2 = new Promise((resolve, reject) => {
 
 Promise.all([p1, p2]).then(() => {
 	let imports = [];
+	let routeImports = [];
 
 	submodules.forEach(submodule => {
-		targetAppFileObj.contentArr.splice(targetAppFileObj.index, 0, `${targetAppFileObj.prefix}{name: '${submodule}', key: '${submodule}', way: '__$AutoInserter'},`)
-		targetRouterFileObj.contentArr.splice(targetRouterFileObj.index, 0, `${targetRouterFileObj.prefix}...__$${submodule}Routes,`);
 		imports.push(`import __$${submodule}Routes from '../../submodule/${submodule}/src/router/routes.js'`);
+		targetRouterFileObj.contentArr.splice(targetRouterFileObj.index, 0, `${targetRouterFileObj.prefix}...__$${submodule}Routes,`);
+
+		// routeImports.push(new Promise((resolve, reject) => {
+		// 	import(`./submodule/${submodule}/src/router/routes.js`).then(res => {
+		// 		let routes = res.default || [];
+
+		// 		(function IIFE(routes) {
+		// 			routes.forEach(route => {
+		// 				targetAppFileObj.contentArr.splice(targetAppFileObj.index, 0, `${targetAppFileObj.prefix}{name: '${(route.meta && route.meta.name) || route.name || submodule}', key: '${route.name || submodule}', way: '__$AutoInserter'},`)
+		// 				if(route.children && route.children.length) IIFE(route.children);
+		// 			});
+		// 		}(routes))
+
+		// 		resolve();
+		// 	});
+		// }));
 	});
 
 	targetRouterFileObj.contentArr = [...imports, ...targetRouterFileObj.contentArr]
@@ -127,9 +142,12 @@ Promise.all([p1, p2]).then(() => {
 
 	});
 
-	fs.writeFile(targetAppFile, targetAppFileObj.contentArr.join('\n'), res => {
+	// Promise.all(routeImports).then(() => {
+	// 	fs.writeFile(targetAppFile, targetAppFileObj.contentArr.join('\n'), res => {
 
-	});
+	// 	});
+	// });
+
 });
 
 function clean(contentArr) {

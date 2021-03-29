@@ -6,17 +6,28 @@
 		@collapse="onCollapse"
 		@breakpoint="onBreakpoint">
 			<div class="logo" />
-			<a-menu theme="dark" mode="inline" :default-selected-keys="defaultSelectedKeys">
-				<a-menu-item :key="item.key" v-for="item in menus">
-					<!-- <a-icon type="user" /> -->
-					<span class="nav-text">{{item.name}}</span>
-				</a-menu-item>
+			<a-menu theme="dark" mode="inline">
+				<template v-for="(item, index) in menus">
+					<a-sub-menu v-if="item.children" :key="'menu-' + index">
+						<span slot="title">
+							<span>{{item.name}}</span>
+						</span>
+						<a-menu-item v-for="(menu, index) in item.children" :key="'sub-menu-' + index"  @click="clickHandler(menu)">
+							<!-- <a-icon type="user" /> -->
+							<span class="nav-text">{{menu.name}}</span>
+						</a-menu-item>
+					</a-sub-menu>
+					<a-menu-item v-else :key="'menu-' + index"  @click="clickHandler(item)">
+						<!-- <a-icon type="user" /> -->
+						<span class="nav-text">{{item.name}}</span>
+					</a-menu-item>
+				</template>
 			</a-menu>
 		</a-layout-sider>
 		<a-layout>
 			<!-- <a-layout-header :style="{ background: '#fff', padding: 0 }" /> -->
-			<a-layout-content :style="{ margin: '0 16px' }">
-				<div :style="{ padding: '24px', background: '#fff', minHeight: '360px', height: '100%' }">
+			<a-layout-content>
+				<div :style="{background: '#fff', minHeight: '360px', height: '100%' }">
 					<router-view></router-view>
 				</div>
 			</a-layout-content>
@@ -32,14 +43,12 @@ export default {
 	data() {
 		return {
 			menus: [
-				{name: 'reflection', key: 'reflection', way: '__$AutoInserter'},
+				{name: 'Reflection', children: [
+					{name: 'Button', path: '/reflection/btn'},
+					{name: 'Gallery', path: '/reflection/gallery'}
+				]}
 			]
 		};
-	},
-	computed: {
-		defaultSelectedKeys() {
-			return [this.menus[0].key];
-		}
 	},
 	methods: {
 		onCollapse(collapsed, type) {
@@ -47,6 +56,13 @@ export default {
 		},
 		onBreakpoint(broken) {
 			console.log(broken);
+		},
+		clickHandler(menu) {
+			if(menu.path === this.$route.path) return;
+			
+			this.$router.push({
+				path: menu.path
+			});
 		}
 	},
 };
