@@ -62,6 +62,7 @@
 		height: 240px;
 		perspective: 2000px;
 		transform-style: preserve-3d;
+		-webkit-box-reflect: below 10px linear-gradient(transparent, rgba(0, 0, 0, 0.4));
 
 		.control {
 			position: relative;
