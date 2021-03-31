@@ -44,17 +44,18 @@
 		justify-content: center;
 		align-items: center;
 	}
-		@keyframes rotate{
-			0%{
-				transform: translateZ(-2000px) rotateY(0deg);
-			}
-			50%{
-				transform: translateZ(-2000px) rotateY(-360deg);
-			}
-			100%{
-				transform: translateZ(-2000px) rotateY(-720deg);
-			}
+	
+	@keyframes rotate{
+		0%{
+			transform: translateZ(-2000px) rotateY(0deg);
 		}
+		50%{
+			transform: translateZ(-2000px) rotateY(-360deg);
+		}
+		100%{
+			transform: translateZ(-2000px) rotateY(-720deg);
+		}
+	}
 
 	.stage {
 		position: relative;
